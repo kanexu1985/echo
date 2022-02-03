@@ -1,0 +1,10 @@
+
+ver		update
+C01		initial
+C01A	add "supportCharList"
+		using require.js
+
+ver		update
+U00		initial
+U00A	add "supportCharList"
+		using require.js

@@ -1,0 +1,223 @@
+<!--
+
+ver		update
+U00		initial
+U00A	add "supportCharList"
+		using require.js
+
+-->
+
+<html>
+<head>
+	<script src="./c01a/require.js"></script>
+	<script src="./c01a/le2.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="./style.css" />
+</head>
+<body>
+<div style="font-size:8pt;">
+[VERSION:U00AC01A]
+</div>
+<table width="100%" border="1" cellpadding="0" cellspacing="0">
+	<tr>
+		<td>
+			Instructions<br>
+			不改变原文长度对文本进行加密<br>
+			(check def.txt for details)
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<input type="button" value="- show options -" onclick="showOpt()">
+		
+			<div id="div_options">
+				ASCII Option:<br>
+				<input type="radio" name="optascii" value="0" onclick="event_optionChange(this);" checked>1 (012...abc...)
+				<input type="radio" name="optascii" value="1" onclick="event_optionChange(this);" >2 (+,./...)
+				<br>
+				<br>
+				Chinese Option:<br>
+				<input type="radio" name="optch" value="0" onclick="event_optionChange(this);" checked>1 仅汉字
+				<input type="radio" name="optch" value="1" onclick="event_optionChange(this);" >2 +标点和双字节数字字母
+				<input type="radio" name="optch" value="2" onclick="event_optionChange(this);" >3 整个Unicode CJK平面
+				<br>
+				<br>
+				(For decode)The input TEXT is a slice of a calculated(encoded) text, and now the 1st char of this slice was originally at postion:<br>
+				<input id="opt_sp" type="number" value="0">
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<b>input KEY:</b><br>
+			<br>
+			<textarea id="text_key" rows="5" cols="60"></textarea>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<b>input TEXT:</b><br>
+			<br>
+			<textarea id="text_str" rows="10" cols="60"></textarea>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<input type="button" value="- go -" onclick="go()">
+			<input type="button" value="- support char list -" onclick="scl()">
+			<br>
+			<b>CODE output:</b><br>
+			<div id="div_output0"></div>
+			<textarea id="div_output" rows="10" cols="60"></textarea>
+		</td>
+	</tr>
+</table>
+
+
+<b></b><br>
+<div id="div_debug"></div>
+
+</body>
+
+<script>
+function fClearDebug(){
+	var b=document.getElementById("div_debug");
+	b.innerHTML="";
+}
+
+function fPrintDebug(fv_str){
+	var a=document.createElement('a');
+	a.innerHTML=fv_str;
+	var b=document.getElementById("div_debug");
+	b.appendChild(a);
+}
+function fPrintDebugL(fv_str){
+	var a=document.createElement('a');
+	a.innerHTML=fv_str+'<br>';
+	var b=document.getElementById("div_debug");
+	b.appendChild(a);
+}
+
+function fPrintOutput(iv){
+	var b=document.getElementById("div_output");
+	b.value=iv;
+}
+//---------------------------------------
+function fdiv_append(iv_div,iv_str){
+	var a=document.createElement('z');
+	a.innerHTML=iv_str;
+	var b=document.getElementById(iv_div);
+	//b.appendHtml(iv_str);
+}
+//---------------------------------------
+function fprintVersion(){
+	
+}
+//-------------init----------------------
+	fprintVersion();
+	
+	document.getElementById("div_options").style.display = "none"
+	document.getElementById("div_debug").style.display = "none"
+	
+	
+//---------------------------------------
+//---------------------------------------
+function showOpt(){
+	document.getElementById("div_options").style.display = "";
+}
+function go(){
+	var lv_optascii;
+	var lv_optch;
+	var lv_key;
+	var lv_str;
+	var lv_sp;
+	var lv_out;
+	
+	fClearDebug();
+	
+	lv_optascii=getOpt("optascii");
+	lv_optch=getOpt("optch");
+	
+	lv_key=getKey();
+	lv_str=getStr();
+	lv_sp=getSp();
+	
+	lv_out=le2calStrC01(lv_key,lv_str,lv_optascii,lv_optch,lv_sp);
+	//alert(lv_out);
+	fPrintOutput(lv_out);
+	
+	fPrintDebugL("str hex:");
+//	le2devprintCJKfilter(lv_str);
+	fPrintDebugL("opt hex:");
+//	le2devprint(lv_out);
+	fPrintDebugL("");
+	
+}
+
+function scl(){
+	var lv_out;
+	
+	fClearDebug();
+	
+	lv_optascii=getOpt("optascii");
+	lv_optch=getOpt("optch");	
+	
+	lv_out=le2suppCharList(lv_optascii,lv_optch);
+
+	fPrintOutput(lv_out);
+}
+
+function test(){
+	var lv_key=getKey();
+	
+	//le2genNoise(lv_key);
+	
+	//alert(getOpt("optascii"));
+	//alert(getOpt("optch"));
+	alert(getSp());
+	
+}
+//---------------------------------------
+function getSp(){
+	var rtv=0;
+	var o=document.getElementById("opt_sp");
+	if (o.value>0) rtv=o.value-1;	//for user on UI "1 is the first" char, convert to "0 is the first" here
+	return rtv;
+}
+function getKey(){	
+	var o=document.getElementById("text_key");
+	return o.value;
+}
+
+function getStr(){	
+	var o=document.getElementById("text_str");
+	return o.value;
+}
+
+function getOpt(iv_domName){
+	var rtv;
+	
+	var radios = document.getElementsByName(iv_domName);
+
+	for (var i = 0, length = radios.length; i < length; i++)
+	{
+	 if (radios[i].checked)
+	 {
+	  // do whatever you want with the checked radio
+	  //alert(radios[i].value);
+		rtv=radios[i].value;
+	  // only one radio can be logically checked, don't check the rest
+	  break;
+	 }
+	}
+	
+	return rtv;
+}
+
+function event_optionChange(io){
+	;//
+}
+	
+</script>
+
+</html>

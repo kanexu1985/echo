@@ -1,0 +1,34 @@
+
+body {
+	/*background: #2E2E2E;*/
+}
+
+td {
+	/*background: #336666;*/
+	/*font-family:Cursive;*/
+	font-family:Monospace;
+	font-size: 9pt;
+	vertical-align:top;
+	align:left;
+}
+
+textarea {
+	
+	/*background: #424949;*/
+	color: #99A3A4;
+	font-family:Monospace;
+	overflow-X: auto;
+	overflow-Y: auto;
+	white-space:nowrap; 
+	width:900px;
+}
+
+#div_debug {
+	font-family:Monospace;
+}
+
+/*
+input[type="radio"] {
+}
+http://www.webhek.com/post/css-beautifiy-radio-checkbox.html
+*/
